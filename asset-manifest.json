@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/aliafzalme.github.io/resume/static/css/main.e6c13ad2.css",
+    "main.js": "/aliafzalme.github.io/resume/static/js/main.1d91d120.js",
+    "static/js/453.c6f6af44.chunk.js": "/aliafzalme.github.io/resume/static/js/453.c6f6af44.chunk.js",
+    "index.html": "/aliafzalme.github.io/resume/index.html",
+    "main.e6c13ad2.css.map": "/aliafzalme.github.io/resume/static/css/main.e6c13ad2.css.map",
+    "main.1d91d120.js.map": "/aliafzalme.github.io/resume/static/js/main.1d91d120.js.map",
+    "453.c6f6af44.chunk.js.map": "/aliafzalme.github.io/resume/static/js/453.c6f6af44.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.1d91d120.js"
+  ]
+}

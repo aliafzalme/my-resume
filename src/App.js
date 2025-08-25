@@ -2,18 +2,40 @@ import React, { useState } from 'react';
 import { Mail, Phone, Linkedin, Github, MapPin, Calendar, ExternalLink, Upload, User, Moon, Sun } from 'lucide-react';
 
 const Resume = () => {
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState(() => {
+    // Check if image exists in localStorage
+    const savedImage = localStorage.getItem('resumeProfileImage');
+    return savedImage || null;
+  });
   const [darkMode, setDarkMode] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file size (localStorage has ~5-10MB limit)
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        alert('Please choose an image smaller than 2MB');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result);
+        const imageData = reader.result;
+        setProfileImage(imageData);
+        // Save to localStorage
+        try {
+          localStorage.setItem('resumeProfileImage', imageData);
+        } catch (e) {
+          alert('Image too large to save. Please choose a smaller image.');
+          console.error('localStorage error:', e);
+        }
       };
       reader.readAsDataURL(file);
     }
+  };
+  const removeProfileImage = () => {
+    setProfileImage(null);
+    localStorage.removeItem('resumeProfileImage');
   };
 
   const styles = {
@@ -33,8 +55,8 @@ const Resume = () => {
       transition: 'all 0.5s'
     },
     header: {
-      background: darkMode 
-        ? 'linear-gradient(to right, #553c9a, #6b46c1)' 
+      background: darkMode
+        ? 'linear-gradient(to right, #553c9a, #6b46c1)'
         : 'linear-gradient(to right, #2563eb, #1e40af)',
       color: 'white',
       padding: '2.5rem 2rem'
@@ -174,10 +196,36 @@ const Resume = () => {
                 cursor: 'pointer',
                 transition: 'opacity 0.3s'
               }}
-              onMouseEnter={e => e.currentTarget.style.opacity = 1}
-              onMouseLeave={e => e.currentTarget.style.opacity = 0}>
+                onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                onMouseLeave={e => e.currentTarget.style.opacity = 0}>
                 <Upload size={24} color="white" />
               </label>
+              {profileImage && (
+                <button
+                  onClick={removeProfileImage}
+                  style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  }}
+                  title="Remove photo"
+                >
+                  ×
+                </button>
+              )}
               <input
                 id="profile-upload"
                 type="file"
@@ -216,10 +264,10 @@ const Resume = () => {
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Professional Summary</h3>
           <p style={styles.text}>
-            Software Engineer with 4+ years of experience specializing in cloud-based integrations and automation. 
-            Expert in building scalable solutions that connect enterprise systems and streamline operations. 
-            At Arrivy, architected and deployed 15+ enterprise integrations (HubSpot, Salesforce, NetSuite, Zoho, Pipedrive) 
-            serving 500+ business clients, reducing manual processes by 70% and improving data accuracy across platforms. 
+            Software Engineer with 4+ years of experience specializing in cloud-based integrations and automation.
+            Expert in building scalable solutions that connect enterprise systems and streamline operations.
+            At Arrivy, architected and deployed 15+ enterprise integrations (HubSpot, Salesforce, NetSuite, Zoho, Pipedrive)
+            serving 500+ business clients, reducing manual processes by 70% and improving data accuracy across platforms.
             Passionate about solving real-time problems through innovative technology solutions and automation.
           </p>
         </div>
@@ -232,7 +280,7 @@ const Resume = () => {
               <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Languages & Frameworks</h4>
               <div>
                 {['JavaScript', 'Python', 'Node.js', 'React.js', 'Java', 'PHP', 'Laravel', 'Google Apps Script'].map(skill => (
-                  <span key={skill} style={{...styles.skill, ...styles.skillBlue}}
+                  <span key={skill} style={{ ...styles.skill, ...styles.skillBlue }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
                     {skill}
@@ -244,7 +292,7 @@ const Resume = () => {
               <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Cloud & DevOps</h4>
               <div>
                 {['Google Cloud Platform', 'Cloud Functions Gen1/Gen2', 'Cloud Run', 'Pub/Sub', 'Bitbucket'].map(skill => (
-                  <span key={skill} style={{...styles.skill, ...styles.skillGreen}}
+                  <span key={skill} style={{ ...styles.skill, ...styles.skillGreen }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
                     {skill}
@@ -256,7 +304,7 @@ const Resume = () => {
               <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Databases & APIs</h4>
               <div>
                 {['PostgreSQL', 'REST APIs', 'Webhooks', 'OAuth 2.0', 'JSON', 'Postman', 'API Development'].map(skill => (
-                  <span key={skill} style={{...styles.skill, ...styles.skillPurple}}
+                  <span key={skill} style={{ ...styles.skill, ...styles.skillPurple }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
                     {skill}
@@ -268,7 +316,7 @@ const Resume = () => {
               <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Enterprise Platforms</h4>
               <div>
                 {['Salesforce', 'HubSpot', 'NetSuite', 'Microsoft 365', 'AWS S3', 'Zoho', 'Pipedrive', 'Xero', 'Google Calendar'].map(skill => (
-                  <span key={skill} style={{...styles.skill, ...styles.skillOrange}}
+                  <span key={skill} style={{ ...styles.skill, ...styles.skillOrange }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
                     {skill}
@@ -295,7 +343,7 @@ const Resume = () => {
                 <p style={{ fontSize: '0.875rem', color: darkMode ? '#a0aec0' : '#a0aec0' }}>Lahore, Pakistan | On-site</p>
               </div>
             </div>
-            
+
             <div style={{ marginTop: '1rem' }}>
               <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Key Achievements:</p>
               <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', color: darkMode ? '#cbd5e0' : '#718096' }}>
@@ -313,42 +361,42 @@ const Resume = () => {
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Key Projects</h3>
           <div>
-            <div style={{...styles.projectCard, borderLeftColor: '#2563eb', backgroundColor: darkMode ? 'rgba(37, 99, 235, 0.1)' : 'rgba(37, 99, 235, 0.05)'}}>
+            <div style={{ ...styles.projectCard, borderLeftColor: '#2563eb', backgroundColor: darkMode ? 'rgba(37, 99, 235, 0.1)' : 'rgba(37, 99, 235, 0.05)' }}>
               <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Multi-Platform Enterprise Integration System</h4>
               <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Node.js, Python, GCP Cloud Functions, PostgreSQL, OAuth 2.0, Webhooks</p>
               <p style={styles.text}>
-                Architected a unified integration platform connecting Arrivy with 15+ enterprise systems. Implemented 
-                bi-directional data sync, webhook processing, and automated field mapping. Reduced integration setup 
+                Architected a unified integration platform connecting Arrivy with 15+ enterprise systems. Implemented
+                bi-directional data sync, webhook processing, and automated field mapping. Reduced integration setup
                 time from weeks to hours and achieved 99.9% data accuracy.
               </p>
             </div>
-            
-            <div style={{...styles.projectCard, borderLeftColor: '#10b981', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'}}>
+
+            <div style={{ ...styles.projectCard, borderLeftColor: '#10b981', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}>
               <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Automated Customer Onboarding Platform</h4>
               <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Python, Node.js, Cloud Run, Pub/Sub, REST APIs</p>
               <p style={styles.text}>
-                Developed an intelligent system for migrating customer data from various sources (CSV, Excel, APIs) 
-                into Arrivy's platform. Features include data validation, transformation, and error recovery. 
+                Developed an intelligent system for migrating customer data from various sources (CSV, Excel, APIs)
+                into Arrivy's platform. Features include data validation, transformation, and error recovery.
                 Reduced onboarding time by 80% and eliminated manual data entry errors.
               </p>
             </div>
 
-            <div style={{...styles.projectCard, borderLeftColor: '#e0a957ff', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'}}>
+            <div style={{ ...styles.projectCard, borderLeftColor: '#e0a957ff', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}>
               <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Internal Workflow Automation Suite</h4>
               <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Python, Node.js, React.js, Monday.com API, ClickUp API, Slack API, Cloud Run, Pub/Sub</p>
               <p style={styles.text}>
-                Built comprehensive automation tools for task management, customer request routing, and real-time 
-                status updates. Integrated with Slack for instant notifications and created dashboards for 
+                Built comprehensive automation tools for task management, customer request routing, and real-time
+                status updates. Integrated with Slack for instant notifications and created dashboards for
                 performance monitoring. Improved team productivity by 40%.
               </p>
             </div>
-        
-            <div style={{...styles.projectCard, borderLeftColor: '#17480cff', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)'}}>
+
+            <div style={{ ...styles.projectCard, borderLeftColor: '#17480cff', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}>
               <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Triangle Integration Architecture</h4>
               <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Node.js, GCP Pub/Sub, Webhooks, REST APIs</p>
               <p style={styles.text}>
-                Designed complex multi-directional data flow system enabling seamless communication between 
-                three or more platforms simultaneously. Implemented intelligent conflict resolution and 
+                Designed complex multi-directional data flow system enabling seamless communication between
+                three or more platforms simultaneously. Implemented intelligent conflict resolution and
                 data consistency algorithms ensuring real-time synchronization.
               </p>
             </div>
@@ -373,9 +421,9 @@ const Resume = () => {
         </div>
 
         {/* Footer */}
-        <div style={{ 
-          backgroundColor: darkMode ? '#1a202c' : '#f7fafc', 
-          padding: '1rem 2rem', 
+        <div style={{
+          backgroundColor: darkMode ? '#1a202c' : '#f7fafc',
+          padding: '1rem 2rem',
           textAlign: 'center',
           color: darkMode ? '#cbd5e0' : '#718096',
           fontSize: '0.875rem'
@@ -386,12 +434,12 @@ const Resume = () => {
 
       {/* Action Buttons */}
       <div style={{ maxWidth: '64rem', margin: '2rem auto', textAlign: 'center' }}>
-        <button onClick={() => window.print()} style={{...styles.button, ...styles.downloadButton}}
+        <button onClick={() => window.print()} style={{ ...styles.button, ...styles.downloadButton }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
           <ExternalLink size={18} /> Download as PDF
         </button>
-        <a href="mailto:aliafzal.me1@gmail.com" style={{...styles.button, ...styles.contactButton, textDecoration: 'none'}}
+        <a href="mailto:aliafzal.me1@gmail.com" style={{ ...styles.button, ...styles.contactButton, textDecoration: 'none' }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
           <Mail size={18} /> Contact Me

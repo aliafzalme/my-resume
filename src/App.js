@@ -1,258 +1,85 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Linkedin, Github, MapPin, Calendar, ExternalLink, Upload, User, Moon, Sun } from 'lucide-react';
+import { Mail, Phone, Linkedin, Github, MapPin, Calendar, ExternalLink, Moon, Sun } from 'lucide-react';
+import profileImage from './assets/images/profile.jpg'; // Import your profile image
+import './Resume.css';
 
 const Resume = () => {
-  const [profileImage, setProfileImage] = useState(() => {
-    // Check if image exists in localStorage
-    const savedImage = localStorage.getItem('resumeProfileImage');
-    return savedImage || null;
-  });
   const [darkMode, setDarkMode] = useState(false);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Check file size (localStorage has ~5-10MB limit)
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        alert('Please choose an image smaller than 2MB');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const imageData = reader.result;
-        setProfileImage(imageData);
-        // Save to localStorage
-        try {
-          localStorage.setItem('resumeProfileImage', imageData);
-        } catch (e) {
-          alert('Image too large to save. Please choose a smaller image.');
-          console.error('localStorage error:', e);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const removeProfileImage = () => {
-    setProfileImage(null);
-    localStorage.removeItem('resumeProfileImage');
+  const skillsData = {
+    'Languages & Frameworks': ['JavaScript', 'Python', 'Node.js', 'React.js', 'Java', 'PHP', 'Laravel', 'Google Apps Script'],
+    'Cloud & DevOps': ['Google Cloud Platform', 'Cloud Functions Gen1/Gen2', 'Cloud Run', 'Pub/Sub', 'Bitbucket'],
+    'Databases & APIs': ['PostgreSQL', 'REST APIs', 'Webhooks', 'OAuth 2.0', 'JSON', 'Postman', 'API Development'],
+    'Enterprise Platforms': ['Salesforce', 'HubSpot', 'NetSuite', 'Microsoft 365', 'AWS S3', 'Zoho', 'Pipedrive', 'Xero', 'Google Calendar']
   };
 
-  const styles = {
-    container: {
-      minHeight: '100vh',
-      backgroundColor: darkMode ? '#1a202c' : '#f7fafc',
-      padding: '2rem',
-      transition: 'background-color 0.5s'
+  const skillColors = ['blue', 'green', 'purple', 'orange'];
+
+  const projects = [
+    {
+      title: 'Multi-Platform Enterprise Integration System',
+      tech: 'Node.js, Python, GCP Cloud Functions, PostgreSQL, OAuth 2.0, Webhooks',
+      description: 'Architected a unified integration platform connecting Arrivy with 15+ enterprise systems. Implemented bi-directional data sync, webhook processing, and automated field mapping. Reduced integration setup time from weeks to hours and achieved 99.9% data accuracy.',
+      color: 'blue'
     },
-    resumeCard: {
-      maxWidth: '64rem',
-      margin: '0 auto',
-      backgroundColor: darkMode ? '#2d3748' : '#ffffff',
-      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-      borderRadius: '0.5rem',
-      overflow: 'hidden',
-      transition: 'all 0.5s'
+    {
+      title: 'Automated Customer Onboarding Platform',
+      tech: 'Python, Node.js, Cloud Run, Pub/Sub, REST APIs',
+      description: 'Developed an intelligent system for migrating customer data from various sources (CSV, Excel, APIs) into Arrivy\'s platform. Features include data validation, transformation, and error recovery. Reduced onboarding time by 80% and eliminated manual data entry errors.',
+      color: 'green'
     },
-    header: {
-      background: darkMode
-        ? 'linear-gradient(to right, #553c9a, #6b46c1)'
-        : 'linear-gradient(to right, #2563eb, #1e40af)',
-      color: 'white',
-      padding: '2.5rem 2rem'
+    {
+      title: 'Internal Workflow Automation Suite',
+      tech: 'Python, Node.js, React.js, Monday.com API, ClickUp API, Slack API, Cloud Run, Pub/Sub',
+      description: 'Built comprehensive automation tools for task management, customer request routing, and real-time status updates. Integrated with Slack for instant notifications and created dashboards for performance monitoring. Improved team productivity by 40%.',
+      color: 'orange'
     },
-    darkToggle: {
-      position: 'absolute',
-      top: '1rem',
-      right: '1rem',
-      padding: '0.75rem',
-      borderRadius: '50%',
-      backgroundColor: darkMode ? '#4a5568' : '#ffffff',
-      color: darkMode ? '#fbbf24' : '#1a202c',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'all 0.3s',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-    },
-    profileImage: {
-      width: '128px',
-      height: '128px',
-      borderRadius: '50%',
-      overflow: 'hidden',
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      border: '4px solid rgba(255, 255, 255, 0.5)',
-      position: 'relative',
-      marginBottom: '1rem'
-    },
-    section: {
-      padding: '1.5rem 2rem',
-      borderBottom: darkMode ? '1px solid #4a5568' : '1px solid #e2e8f0'
-    },
-    sectionTitle: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      marginBottom: '1rem',
-      color: darkMode ? '#ffffff' : '#1a202c'
-    },
-    text: {
-      color: darkMode ? '#e2e8f0' : '#4a5568',
-      lineHeight: 1.6
-    },
-    skill: {
-      display: 'inline-block',
-      padding: '0.25rem 0.75rem',
-      margin: '0.25rem',
-      borderRadius: '9999px',
-      fontSize: '0.875rem',
-      transition: 'transform 0.2s',
-      cursor: 'default'
-    },
-    skillBlue: {
-      backgroundColor: darkMode ? '#2c5282' : '#dbeafe',
-      color: darkMode ? '#bee3f8' : '#1e40af'
-    },
-    skillGreen: {
-      backgroundColor: darkMode ? '#276749' : '#d1fae5',
-      color: darkMode ? '#9ae6b4' : '#065f46'
-    },
-    skillPurple: {
-      backgroundColor: darkMode ? '#553c9a' : '#e9d8fd',
-      color: darkMode ? '#d6bcfa' : '#6b21a8'
-    },
-    skillOrange: {
-      backgroundColor: darkMode ? '#c05621' : '#fed7aa',
-      color: darkMode ? '#fbd38d' : '#c2410c'
-    },
-    contactLink: {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      color: 'white',
-      textDecoration: 'none',
-      marginRight: '1rem',
-      fontSize: '0.875rem',
-      transition: 'transform 0.2s'
-    },
-    button: {
-      padding: '0.5rem 1.5rem',
-      borderRadius: '0.5rem',
-      border: 'none',
-      color: 'white',
-      cursor: 'pointer',
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      margin: '1rem 0.5rem',
-      transition: 'transform 0.2s',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-    },
-    downloadButton: {
-      backgroundColor: darkMode ? '#6b46c1' : '#2563eb'
-    },
-    contactButton: {
-      backgroundColor: darkMode ? '#4c1d95' : '#059669'
-    },
-    projectCard: {
-      borderLeft: '4px solid',
-      paddingLeft: '1rem',
-      marginBottom: '1rem',
-      padding: '0.5rem 0 0.5rem 1rem',
-      borderRadius: '0 0.25rem 0.25rem 0',
-      transition: 'all 0.3s'
+    {
+      title: 'Triangle Integration Architecture',
+      tech: 'Node.js, GCP Pub/Sub, Webhooks, REST APIs',
+      description: 'Designed complex multi-directional data flow system enabling seamless communication between three or more platforms simultaneously. Implemented intelligent conflict resolution and data consistency algorithms ensuring real-time synchronization.',
+      color: 'dark-green'
     }
-  };
+  ];
+
+  const themeClass = darkMode ? 'dark' : 'light';
 
   return (
-    <div style={styles.container}>
+    <div className={`container ${themeClass}`}>
       {/* Dark Mode Toggle */}
       <div style={{ maxWidth: '64rem', margin: '0 auto 1rem', textAlign: 'right' }}>
-        <button onClick={() => setDarkMode(!darkMode)} style={styles.darkToggle}>
+        <button onClick={() => setDarkMode(!darkMode)} className={`dark-toggle ${themeClass}`}>
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </div>
 
-      <div style={styles.resumeCard}>
+      <div className={`resume-card ${themeClass}`}>
         {/* Header */}
-        <div style={styles.header}>
-          <div style={{ display: 'flex', flexDirection: window.innerWidth > 768 ? 'row' : 'column', alignItems: 'center', gap: '1.5rem' }}>
+        <div className={`header ${themeClass}`}>
+          <div className="header-content">
             {/* Profile Picture */}
-            <div style={styles.profileImage}>
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <User size={48} style={{ opacity: 0.7 }} />
-                </div>
-              )}
-              <label htmlFor="profile-upload" style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                borderRadius: '50%',
-                opacity: 0,
-                cursor: 'pointer',
-                transition: 'opacity 0.3s'
-              }}
-                onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                onMouseLeave={e => e.currentTarget.style.opacity = 0}>
-                <Upload size={24} color="white" />
-              </label>
-              {profileImage && (
-                <button
-                  onClick={removeProfileImage}
-                  style={{
-                    position: 'absolute',
-                    top: '-5px',
-                    right: '-5px',
-                    width: '30px',
-                    height: '30px',
-                    borderRadius: '50%',
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                  }}
-                  title="Remove photo"
-                >
-                  ×
-                </button>
-              )}
-              <input
-                id="profile-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: 'none' }}
-              />
+            <div className="profile-image">
+              <img src={profileImage} alt="Ali Afzal" />
             </div>
 
             {/* Header Text */}
-            <div style={{ flex: 1, textAlign: window.innerWidth > 768 ? 'left' : 'center' }}>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Ali Afzal</h1>
-              <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Software Engineer II | Cloud Integration Specialist</h2>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: window.innerWidth > 768 ? 'flex-start' : 'center' }}>
-                <a href="mailto:aliafzal.me1@gmail.com" style={styles.contactLink}>
+            <div className="header-text">
+              <h1>Ali Afzal</h1>
+              <h2>Software Engineer II | Cloud Integration Specialist</h2>
+              <div className="contact-links">
+                <a href="mailto:aliafzal.me1@gmail.com" className="contact-link">
                   <Mail size={16} /> aliafzal.me1@gmail.com
                 </a>
-                <a href="tel:+923041056703" style={styles.contactLink}>
+                <a href="tel:+923041056703" className="contact-link">
                   <Phone size={16} /> +92 304 1056703
                 </a>
-                <span style={styles.contactLink}>
+                <span className="contact-link">
                   <MapPin size={16} /> Lahore, Pakistan
                 </span>
-                <a href="https://linkedin.com/in/ali-afzal-790966177" target="_blank" rel="noopener noreferrer" style={styles.contactLink}>
+                <a href="https://linkedin.com/in/ali-afzal-790966177" target="_blank" rel="noopener noreferrer" className="contact-link">
                   <Linkedin size={16} /> LinkedIn
                 </a>
-                <a href="https://github.com/aliafzal" target="_blank" rel="noopener noreferrer" style={styles.contactLink}>
+                <a href="https://github.com/aliafzal" target="_blank" rel="noopener noreferrer" className="contact-link">
                   <Github size={16} /> GitHub
                 </a>
               </div>
@@ -261,9 +88,9 @@ const Resume = () => {
         </div>
 
         {/* Professional Summary */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Professional Summary</h3>
-          <p style={styles.text}>
+        <div className={`section ${themeClass}`}>
+          <h3 className={`section-title ${themeClass}`}>Professional Summary</h3>
+          <p className={`text ${themeClass}`}>
             Software Engineer with 4+ years of experience specializing in cloud-based integrations and automation.
             Expert in building scalable solutions that connect enterprise systems and streamline operations.
             At Arrivy, architected and deployed 15+ enterprise integrations (HubSpot, Salesforce, NetSuite, Zoho, Pipedrive)
@@ -273,80 +100,44 @@ const Resume = () => {
         </div>
 
         {/* Technical Skills */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Technical Skills</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? 'repeat(2, 1fr)' : '1fr', gap: '1rem' }}>
-            <div>
-              <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Languages & Frameworks</h4>
-              <div>
-                {['JavaScript', 'Python', 'Node.js', 'React.js', 'Java', 'PHP', 'Laravel', 'Google Apps Script'].map(skill => (
-                  <span key={skill} style={{ ...styles.skill, ...styles.skillBlue }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
-                    {skill}
-                  </span>
-                ))}
+        <div className={`section ${themeClass}`}>
+          <h3 className={`section-title ${themeClass}`}>Technical Skills</h3>
+          <div className="skills-grid">
+            {Object.entries(skillsData).map(([category, skills], index) => (
+              <div key={category} className="skills-category">
+                <h4 className={themeClass}>{category}</h4>
+                <div>
+                  {skills.map(skill => (
+                    <span key={skill} className={`skill skill-${skillColors[index]} ${themeClass}`}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div>
-              <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Cloud & DevOps</h4>
-              <div>
-                {['Google Cloud Platform', 'Cloud Functions Gen1/Gen2', 'Cloud Run', 'Pub/Sub', 'Bitbucket'].map(skill => (
-                  <span key={skill} style={{ ...styles.skill, ...styles.skillGreen }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Databases & APIs</h4>
-              <div>
-                {['PostgreSQL', 'REST APIs', 'Webhooks', 'OAuth 2.0', 'JSON', 'Postman', 'API Development'].map(skill => (
-                  <span key={skill} style={{ ...styles.skill, ...styles.skillPurple }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Enterprise Platforms</h4>
-              <div>
-                {['Salesforce', 'HubSpot', 'NetSuite', 'Microsoft 365', 'AWS S3', 'Zoho', 'Pipedrive', 'Xero', 'Google Calendar'].map(skill => (
-                  <span key={skill} style={{ ...styles.skill, ...styles.skillOrange }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-2px)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1) translateY(0)'}>
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Experience */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Professional Experience</h3>
+        <div className={`section ${themeClass}`}>
+          <h3 className={`section-title ${themeClass}`}>Professional Experience</h3>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-              <div>
-                <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Software Engineer II</h4>
-                <p style={{ color: darkMode ? '#cbd5e0' : '#718096' }}>Arrivy - Field Service Management SaaS Platform</p>
+            <div className="experience-header">
+              <div className="experience-title">
+                <h4 className={themeClass}>Software Engineer II</h4>
+                <p className={`experience-company ${themeClass}`}>Arrivy - Field Service Management SaaS Platform</p>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ color: darkMode ? '#cbd5e0' : '#718096', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <div className="experience-date">
+                <p className={`date ${themeClass}`}>
                   <Calendar size={16} /> Sep 2021 - Present (4 years)
                 </p>
-                <p style={{ fontSize: '0.875rem', color: darkMode ? '#a0aec0' : '#a0aec0' }}>Lahore, Pakistan | On-site</p>
+                <p className="location">Lahore, Pakistan | On-site</p>
               </div>
             </div>
 
-            <div style={{ marginTop: '1rem' }}>
-              <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: darkMode ? '#e2e8f0' : '#4a5568' }}>Key Achievements:</p>
-              <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', color: darkMode ? '#cbd5e0' : '#718096' }}>
+            <div className="achievements">
+              <p className={themeClass}>Key Achievements:</p>
+              <ul className={themeClass}>
                 <li>Built full bi-directional integrations with 15+ platforms including HubSpot, Zoho, Pipedrive, Salesforce, Google Calendar, Microsoft 365, AWS S3, Motive, NetSuite, Quickbase, Slack, Zendesk, Xero, Insightly, Nimble, and Archibus</li>
                 <li>Reduced customer onboarding time by 80% through automated data migration scripts in Python and Node.js</li>
                 <li>Designed event-driven architecture using GCP Pub/Sub, processing 1M+ events monthly with 99.9% uptime</li>
@@ -358,90 +149,47 @@ const Resume = () => {
         </div>
 
         {/* Projects */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Key Projects</h3>
+        <div className={`section ${themeClass}`}>
+          <h3 className={`section-title ${themeClass}`}>Key Projects</h3>
           <div>
-            <div style={{ ...styles.projectCard, borderLeftColor: '#2563eb', backgroundColor: darkMode ? 'rgba(37, 99, 235, 0.1)' : 'rgba(37, 99, 235, 0.05)' }}>
-              <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Multi-Platform Enterprise Integration System</h4>
-              <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Node.js, Python, GCP Cloud Functions, PostgreSQL, OAuth 2.0, Webhooks</p>
-              <p style={styles.text}>
-                Architected a unified integration platform connecting Arrivy with 15+ enterprise systems. Implemented
-                bi-directional data sync, webhook processing, and automated field mapping. Reduced integration setup
-                time from weeks to hours and achieved 99.9% data accuracy.
-              </p>
-            </div>
-
-            <div style={{ ...styles.projectCard, borderLeftColor: '#10b981', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}>
-              <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Automated Customer Onboarding Platform</h4>
-              <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Python, Node.js, Cloud Run, Pub/Sub, REST APIs</p>
-              <p style={styles.text}>
-                Developed an intelligent system for migrating customer data from various sources (CSV, Excel, APIs)
-                into Arrivy's platform. Features include data validation, transformation, and error recovery.
-                Reduced onboarding time by 80% and eliminated manual data entry errors.
-              </p>
-            </div>
-
-            <div style={{ ...styles.projectCard, borderLeftColor: '#e0a957ff', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}>
-              <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Internal Workflow Automation Suite</h4>
-              <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Python, Node.js, React.js, Monday.com API, ClickUp API, Slack API, Cloud Run, Pub/Sub</p>
-              <p style={styles.text}>
-                Built comprehensive automation tools for task management, customer request routing, and real-time
-                status updates. Integrated with Slack for instant notifications and created dashboards for
-                performance monitoring. Improved team productivity by 40%.
-              </p>
-            </div>
-
-            <div style={{ ...styles.projectCard, borderLeftColor: '#17480cff', backgroundColor: darkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)' }}>
-              <h4 style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Triangle Integration Architecture</h4>
-              <p style={{ fontSize: '0.875rem', color: darkMode ? '#cbd5e0' : '#718096', marginBottom: '0.25rem' }}>Node.js, GCP Pub/Sub, Webhooks, REST APIs</p>
-              <p style={styles.text}>
-                Designed complex multi-directional data flow system enabling seamless communication between
-                three or more platforms simultaneously. Implemented intelligent conflict resolution and
-                data consistency algorithms ensuring real-time synchronization.
-              </p>
-            </div>
-
+            {projects.map((project, index) => (
+              <div key={index} className={`project-card ${project.color} ${themeClass}`}>
+                <h4 className={themeClass}>{project.title}</h4>
+                <p className={`project-tech ${themeClass}`}>{project.tech}</p>
+                <p className={`text ${themeClass}`}>{project.description}</p>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Education */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Education</h3>
-          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-            <div>
-              <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: darkMode ? '#ffffff' : '#1a202c' }}>Bachelor of Software Engineering (BSSE)</h4>
-              <p style={{ color: darkMode ? '#cbd5e0' : '#718096' }}>University of Sargodha</p>
-              <p style={{ color: darkMode ? '#cbd5e0' : '#718096' }}>Computer and Information Sciences</p>
+        <div className={`section ${themeClass}`}>
+          <h3 className={`section-title ${themeClass}`}>Education</h3>
+          <div className="education-header">
+            <div className="education-info">
+              <h4 className={themeClass}>Bachelor of Software Engineering (BSSE)</h4>
+              <p className={themeClass}>University of Sargodha</p>
+              <p className={themeClass}>Computer and Information Sciences</p>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ color: darkMode ? '#cbd5e0' : '#718096' }}>2016 - 2020</p>
-              <p style={{ color: darkMode ? '#a0aec0' : '#a0aec0' }}>Grade: B</p>
+            <div className="education-dates">
+              <p className={`year ${themeClass}`}>2016 - 2020</p>
+              <p className="grade">Grade: B</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{
-          backgroundColor: darkMode ? '#1a202c' : '#f7fafc',
-          padding: '1rem 2rem',
-          textAlign: 'center',
-          color: darkMode ? '#cbd5e0' : '#718096',
-          fontSize: '0.875rem'
-        }}>
+        <div className={`footer ${themeClass}`}>
           <p>References available upon request | Open to remote and hybrid opportunities | Immediate availability</p>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div style={{ maxWidth: '64rem', margin: '2rem auto', textAlign: 'center' }}>
-        <button onClick={() => window.print()} style={{ ...styles.button, ...styles.downloadButton }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+      <div className="action-buttons">
+        <button onClick={() => window.print()} className={`button download-button ${themeClass}`}>
           <ExternalLink size={18} /> Download as PDF
         </button>
-        <a href="mailto:aliafzal.me1@gmail.com" style={{ ...styles.button, ...styles.contactButton, textDecoration: 'none' }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+        <a href="mailto:aliafzal.me1@gmail.com" className={`button contact-button ${themeClass}`}>
           <Mail size={18} /> Contact Me
         </a>
       </div>

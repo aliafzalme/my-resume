@@ -76,12 +76,10 @@ const Resume = () => {
                 <span className="contact-link">
                   <MapPin size={16} /> Lahore, Pakistan
                 </span>
-                <a href="https://linkedin.com/in/ali-afzal-790966177" target="_blank" rel="noopener noreferrer" className="contact-link">
+                <a href="https://www.linkedin.com/in/ali-afzal-790966177" target="_blank" rel="noopener noreferrer" className="contact-link">
                   <Linkedin size={16} /> LinkedIn
                 </a>
-                <a href="https://github.com/aliafzal" target="_blank" rel="noopener noreferrer" className="contact-link">
-                  <Github size={16} /> GitHub
-                </a>
+                
               </div>
             </div>
           </div>

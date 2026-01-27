@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Mail, Phone, Linkedin, Github, MapPin, Calendar, ExternalLink, Moon, Sun } from 'lucide-react';
-import profileImage from './assets/images/profile.jpg'; // Import your profile image
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import profileImage from './assets/images/profile.png'; // Import your profile image
 import './Resume.css';
 
 const Resume = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const resumeRef = useRef(null);
 
   const skillsData = {
     'Languages & Frameworks': ['JavaScript', 'Python', 'Node.js', 'React.js', 'Java', 'PHP', 'Laravel', 'Google Apps Script'],
@@ -14,6 +18,61 @@ const Resume = () => {
   };
 
   const skillColors = ['blue', 'green', 'purple', 'orange'];
+
+  const handleDownloadPDF = async () => {
+    setIsGenerating(true);
+    try {
+      const element = resumeRef.current;
+      
+      // Temporarily hide the dark mode toggle for PDF
+      const darkToggle = element.querySelector('.dark-toggle');
+      if (darkToggle) darkToggle.style.display = 'none';
+      
+      // Configure html2canvas for high quality
+      const canvas = await html2canvas(element, {
+        scale: 2, // Higher scale for better quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: darkMode ? '#1a202c' : '#f7fafc',
+        logging: false,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+      });
+      
+      // Show the toggle again
+      if (darkToggle) darkToggle.style.display = 'block';
+      
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Calculate PDF dimensions
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
+      
+      // Add first page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      // Add additional pages if content is longer than one page
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save('Ali_Afzal_Resume.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('There was an error generating the PDF. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const projects = [
     {
@@ -53,7 +112,7 @@ const Resume = () => {
         </button>
       </div>
 
-      <div className={`resume-card ${themeClass}`}>
+      <div ref={resumeRef} className={`resume-card ${themeClass}`}>
         {/* Header */}
         <div className={`header ${themeClass}`}>
           <div className="header-content">
@@ -184,8 +243,13 @@ const Resume = () => {
 
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button onClick={() => window.print()} className={`button download-button ${themeClass}`}>
-          <ExternalLink size={18} /> Download as PDF
+        <button 
+          onClick={handleDownloadPDF} 
+          className={`button download-button ${themeClass}`}
+          disabled={isGenerating}
+        >
+          <ExternalLink size={18} /> 
+          {isGenerating ? 'Generating PDF...' : 'Download as PDF'}
         </button>
         <a href="mailto:aliafzal.me1@gmail.com" className={`button contact-button ${themeClass}`}>
           <Mail size={18} /> Contact Me

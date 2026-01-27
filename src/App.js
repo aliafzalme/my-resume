@@ -11,10 +11,12 @@ const Resume = () => {
   const resumeRef = useRef(null);
 
   const skillsData = {
-    'Languages & Frameworks': ['JavaScript', 'Python', 'Node.js', 'React.js', 'Java', 'PHP', 'Laravel', 'Google Apps Script'],
+    'Languages & Frameworks': ['JavaScript', 'Python', 'Node.js', 'React.js', 'PHP', 'Laravel', 'Google Apps Script', 'MS Power Automate', 'MS Power Apps'],
     'Cloud & DevOps': ['Google Cloud Platform', 'Cloud Functions Gen1/Gen2', 'Cloud Run', 'Pub/Sub', 'Bitbucket'],
     'Databases & APIs': ['PostgreSQL', 'REST APIs', 'Webhooks', 'OAuth 2.0', 'JSON', 'Postman', 'API Development'],
-    'Enterprise Platforms': ['Salesforce', 'HubSpot', 'NetSuite', 'Microsoft 365', 'AWS S3', 'Zoho', 'Pipedrive', 'Xero', 'Google Calendar']
+    'Enterprise Platforms': ['Salesforce', 'HubSpot', 'NetSuite', 'Microsoft 365', 'AWS S3', 'Zoho', 'Pipedrive', 'Xero', 'Google Calendar', 'Zendesk', 'Slack', 'Monday.com', 'ClickUp', 'JobNimbus', 'Archibus', 'Zapier', 'Google Drive',
+      'QuickBooks', 'Quickbase', 'Insightly', 'Motive', 'Nimble', 'Tape', 'SubcontractorHub'
+    ]
   };
 
   const skillColors = ['blue', 'green', 'purple', 'orange'];
@@ -23,48 +25,110 @@ const Resume = () => {
     setIsGenerating(true);
     try {
       const element = resumeRef.current;
-      
+
+      // Store original styles
+      const originalPadding = element.style.padding;
+      const originalMargin = element.style.margin;
+
       // Temporarily hide the dark mode toggle for PDF
       const darkToggle = element.querySelector('.dark-toggle');
       if (darkToggle) darkToggle.style.display = 'none';
-      
+
+      // Optimize element for PDF capture
+      element.style.padding = '0';
+      element.style.margin = '0';
+
       // Configure html2canvas for high quality
       const canvas = await html2canvas(element, {
-        scale: 2, // Higher scale for better quality
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: darkMode ? '#1a202c' : '#f7fafc',
         logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
         windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
+        scrollY: -window.scrollY,
+        scrollX: -window.scrollX,
       });
-      
-      // Show the toggle again
+
+      // Restore original styles
+      element.style.padding = originalPadding;
+      element.style.margin = originalMargin;
       if (darkToggle) darkToggle.style.display = 'block';
-      
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Calculate PDF dimensions
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      
-      // Add first page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-      
-      // Add additional pages if content is longer than one page
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      // PDF dimensions (A4)
+      const pdfWidth = 210; // mm
+      const pdfHeight = 297; // mm
+      const margin = 10; // mm
+      const contentWidth = pdfWidth - (margin * 2);
+
+      // Calculate scaling
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = imgWidth / imgHeight;
+
+      const scaledWidth = contentWidth;
+      const scaledHeight = scaledWidth / ratio;
+
+      const pdf = new jsPDF('p', 'mm', 'a4', true);
+
+      let heightLeft = scaledHeight;
+      let position = margin;
+      let pageCount = 0;
+
+      // Add pages
+      while (heightLeft > 0) {
+        if (pageCount > 0) {
+          pdf.addPage();
+        }
+
+        const pageContentHeight = pdfHeight - (margin * 2);
+        const sourceY = pageCount * pageContentHeight * (imgHeight / scaledHeight);
+        const sourceHeight = Math.min(
+          pageContentHeight * (imgHeight / scaledHeight),
+          imgHeight - sourceY
+        );
+
+        if (sourceHeight > 0) {
+          const croppedCanvas = document.createElement('canvas');
+          croppedCanvas.width = imgWidth;
+          croppedCanvas.height = sourceHeight;
+          const ctx = croppedCanvas.getContext('2d');
+
+          ctx.drawImage(
+            canvas,
+            0, sourceY,
+            imgWidth, sourceHeight,
+            0, 0,
+            imgWidth, sourceHeight
+          );
+
+          const croppedImgData = croppedCanvas.toDataURL('image/png', 1.0);
+          const croppedScaledHeight = (sourceHeight / imgHeight) * scaledHeight;
+
+          pdf.addImage(
+            croppedImgData,
+            'PNG',
+            margin,
+            margin,
+            contentWidth,
+            croppedScaledHeight,
+            '',
+            'FAST'
+          );
+        }
+
+        heightLeft -= pageContentHeight;
+        pageCount++;
+
+        // Safety limit
+        if (pageCount > 10) break;
       }
-      
+
       pdf.save('Ali_Afzal_Resume.pdf');
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -138,7 +202,7 @@ const Resume = () => {
                 <a href="https://www.linkedin.com/in/ali-afzal-790966177" target="_blank" rel="noopener noreferrer" className="contact-link">
                   <Linkedin size={16} /> LinkedIn
                 </a>
-                
+
               </div>
             </div>
           </div>
@@ -243,12 +307,12 @@ const Resume = () => {
 
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button 
-          onClick={handleDownloadPDF} 
+        <button
+          onClick={handleDownloadPDF}
           className={`button download-button ${themeClass}`}
           disabled={isGenerating}
         >
-          <ExternalLink size={18} /> 
+          <ExternalLink size={18} />
           {isGenerating ? 'Generating PDF...' : 'Download as PDF'}
         </button>
         <a href="mailto:aliafzal.me1@gmail.com" className={`button contact-button ${themeClass}`}>

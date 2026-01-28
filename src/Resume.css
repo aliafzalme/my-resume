@@ -239,6 +239,16 @@
   color: #c2410c;
 }
 
+.skill-teal.dark {
+  background-color: #0f766e;
+  color: #5eead4;
+}
+
+.skill-teal.light {
+  background-color: #ccfbf1;
+  color: #0f766e;
+}
+
 .experience-header {
   display: flex;
   justify-content: space-between;

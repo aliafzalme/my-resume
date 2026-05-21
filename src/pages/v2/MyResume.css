@@ -1,0 +1,369 @@
+/* v2: traditional B&W referral resume. Screen and print render identically. */
+
+.r2-page {
+  background: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.r2-print-action {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 14px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.r2-print-action:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.r2-doc {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.r2-header {
+  margin-bottom: 24px;
+}
+
+.r2-name {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0 0 4px 0;
+  color: #000000;
+}
+
+.r2-role {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 10px 0;
+  color: #333333;
+}
+
+.r2-contact {
+  font-size: 11.5px;
+  color: #333333;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.r2-contact .r2-icon {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+  color: #000000;
+  flex-shrink: 0;
+}
+
+.r2-contact a {
+  color: #000000;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.r2-contact .r2-sep {
+  color: #666666;
+}
+
+.r2-contact-item {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Section primitives */
+.r2-section {
+  margin-top: 24px;
+}
+
+.r2-section-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 10px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #000000;
+  color: #000000;
+}
+
+.r2-section-body {
+  margin: 0;
+  color: #000000;
+}
+
+.r2-section-body p {
+  margin: 0;
+}
+
+/* Summary */
+.r2-summary {
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #333333;
+}
+
+/* Experience */
+.r2-experience-entry {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 14px;
+}
+
+.r2-experience-entry:last-child {
+  margin-bottom: 0;
+}
+
+.r2-role-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.r2-role-line-left {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.r2-role-line-left .r2-role-title {
+  font-weight: 700;
+}
+
+.r2-role-line-left .r2-role-company {
+  font-weight: 500;
+}
+
+.r2-role-line-right {
+  font-size: 11.5px;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.r2-role-sub {
+  font-size: 11.5px;
+  color: #666666;
+  margin-bottom: 6px;
+}
+
+.r2-bullets {
+  list-style: disc;
+  margin: 0;
+  padding-left: 18px;
+  color: #333333;
+}
+
+.r2-bullets li {
+  margin-bottom: 3px;
+  line-height: 1.5;
+}
+
+.r2-bullets li:last-child {
+  margin-bottom: 0;
+}
+
+/* Key Projects — visually emphasized */
+.r2-section--projects {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 2px solid #000000;
+}
+
+.r2-section--projects .r2-section-title {
+  font-size: 14px;
+  letter-spacing: 0.14em;
+}
+
+.r2-project {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 12px;
+}
+
+.r2-project:last-child {
+  margin-bottom: 0;
+}
+
+.r2-project-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  color: #000000;
+}
+
+.r2-project-tech {
+  font-size: 11px;
+  color: #666666;
+  margin: 0 0 3px 0;
+  font-style: italic;
+}
+
+.r2-project-desc {
+  font-size: 11.5px;
+  color: #333333;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Inline tag lists (Enterprise Platforms, Technical Skills) */
+.r2-inline-list {
+  font-size: 11.5px;
+  color: #333333;
+  line-height: 1.6;
+}
+
+.r2-skill-group {
+  margin-bottom: 6px;
+}
+
+.r2-skill-group:last-child {
+  margin-bottom: 0;
+}
+
+.r2-skill-group-label {
+  font-weight: 700;
+  color: #000000;
+}
+
+/* Education */
+.r2-edu-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 11.5px;
+}
+
+.r2-edu-left {
+  color: #333333;
+}
+
+.r2-edu-degree {
+  font-weight: 700;
+  color: #000000;
+}
+
+.r2-edu-right {
+  color: #666666;
+  white-space: nowrap;
+}
+
+/* Specializations */
+.r2-spec-list {
+  list-style: disc;
+  margin: 0;
+  padding-left: 18px;
+  color: #333333;
+  font-size: 11.5px;
+}
+
+.r2-spec-list li {
+  margin-bottom: 2px;
+  line-height: 1.5;
+}
+
+/* Mobile — single column, legible at 360px */
+@media (max-width: 640px) {
+  .r2-doc {
+    padding: 24px 20px;
+  }
+
+  .r2-name {
+    font-size: 22px;
+  }
+
+  .r2-role-line {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .r2-role-line-right {
+    white-space: normal;
+  }
+
+  .r2-edu-line {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .r2-print-action {
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Page box — declared at top level (browsers are less reliable about @page nested in @media print) */
+@page {
+  size: Letter;
+  margin: 0.6in 0.65in;
+}
+
+/* Print — perfect parity with screen, hide UI */
+@media print {
+  .r2-print-action {
+    display: none !important;
+  }
+
+  .r2-page {
+    background: #ffffff !important;
+    color: #000000 !important;
+    min-height: 0;
+  }
+
+  /*
+   * Belt-and-suspenders padding: if the user picks "Margins: None" in the
+   * print dialog, @page margin is overridden to 0. This padding keeps the
+   * document from butting against the page edge on page 1 (and on every page
+   * horizontally). On page 2+ the top edge will still be flush when "None"
+   * is selected — use "Default" margins for full per-page padding.
+   */
+  .r2-doc {
+    max-width: none;
+    padding: 0.35in 0.4in;
+    margin: 0;
+  }
+
+  .r2-experience-entry,
+  .r2-project {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .r2-section-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Force pure black ink — disable browser color-adjust shortcuts */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

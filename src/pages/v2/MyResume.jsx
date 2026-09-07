@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Linkedin, Github } from 'lucide-react';
+import generateResumePdf from './generateResumePdf';
 import {
   header,
   summary,
@@ -24,18 +25,41 @@ const ContactItem = ({ icon: Icon, children }) => (
 const Separator = () => <span className="r2-sep" aria-hidden="true">·</span>;
 
 const MyResume = () => {
-  const handlePrint = () => window.print();
+  const [pdfError, setPdfError] = useState(null);
+
+  /*
+   * Builds the PDF in-page rather than going through window.print(). A printed
+   * PDF depends on the destination driver, and "Microsoft Print to PDF" writes
+   * glyphs as vector outlines with no text layer — the file looks right but
+   * every ATS and text extractor reads it as blank.
+   */
+  const handleDownload = () => {
+    setPdfError(null);
+    try {
+      generateResumePdf();
+    } catch (err) {
+      setPdfError('PDF generation failed. Use Print instead and pick "Save as PDF".');
+      // eslint-disable-next-line no-console
+      console.error('Resume PDF generation failed:', err);
+    }
+  };
 
   return (
     <div className="r2-page">
-      <button
-        type="button"
-        className="r2-print-action"
-        onClick={handlePrint}
-        aria-label="Download PDF"
-      >
-        Download PDF
-      </button>
+      <div className="r2-actions">
+        <button type="button" className="r2-print-action" onClick={handleDownload}>
+          Download PDF
+        </button>
+        <button
+          type="button"
+          className="r2-print-action r2-print-action--secondary"
+          onClick={() => window.print()}
+          title='Browser print — choose "Save as PDF", not "Microsoft Print to PDF"'
+        >
+          Print
+        </button>
+        {pdfError && <span className="r2-actions-error" role="alert">{pdfError}</span>}
+      </div>
 
       <main className="r2-doc">
         <header className="r2-header">

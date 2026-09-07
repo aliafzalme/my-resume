@@ -11,11 +11,26 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.r2-print-action {
+.r2-actions {
   position: fixed;
   top: 16px;
   right: 16px;
   z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.r2-actions-error {
+  font-size: 11px;
+  color: #000000;
+  background: #ffffff;
+  border: 1px solid #000000;
+  padding: 6px 8px;
+  max-width: 220px;
+}
+
+.r2-print-action {
   font: inherit;
   font-size: 12px;
   font-weight: 500;
@@ -31,6 +46,11 @@
 .r2-print-action:hover {
   background: #000000;
   color: #ffffff;
+}
+
+.r2-print-action--secondary {
+  border-color: #666666;
+  color: #333333;
 }
 
 .r2-doc {
@@ -311,9 +331,12 @@
     gap: 2px;
   }
 
-  .r2-print-action {
+  .r2-actions {
     top: 8px;
     right: 8px;
+  }
+
+  .r2-print-action {
     padding: 6px 10px;
     font-size: 11px;
   }
@@ -327,7 +350,7 @@
 
 /* Print — perfect parity with screen, hide UI */
 @media print {
-  .r2-print-action {
+  .r2-actions {
     display: none !important;
   }
 

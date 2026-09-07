@@ -108,16 +108,34 @@ const runs = (L, parts, opts) => {
   let line = [];
   let lineW = 0;
 
+  const sameStyle = (a, b) =>
+    a.size === b.size && a.style === b.style && String(a.color) === String(b.color);
+
   const flush = () => {
-    if (!line.length) return;
-    L.ensure(lh);
-    let cx = x;
-    line.forEach((t) => {
-      setFont(doc, t);
-      doc.text(t.text, cx, baselineIn(L.y, t.size, lh));
-      cx += doc.getTextWidth(t.text);
-    });
-    L.y += lh;
+    // No stray whitespace run hanging off the end of a line.
+    while (line.length && /^\s+$/.test(line[line.length - 1].text)) line.pop();
+    if (line.length) {
+      L.ensure(lh);
+      /*
+       * Merge neighbouring same-style tokens into one text run. Emitting a
+       * separate positioned run per word renders identically but makes text
+       * extractors drop the spaces between them ("ETL/ELT·"), which defeats
+       * the point of generating a parseable PDF in the first place.
+       */
+      const segments = [];
+      line.forEach((t) => {
+        const prev = segments[segments.length - 1];
+        if (prev && sameStyle(prev, t)) prev.text += t.text;
+        else segments.push({ ...t });
+      });
+      let cx = x;
+      segments.forEach((seg) => {
+        setFont(doc, seg);
+        doc.text(seg.text, cx, baselineIn(L.y, seg.size, lh));
+        cx += doc.getTextWidth(seg.text);
+      });
+      L.y += lh;
+    }
     line = [];
     lineW = 0;
   };
